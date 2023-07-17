@@ -1,25 +1,22 @@
 import { Fragment, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CreateDivisionModal } from '../modals/division/CreateDivisionModal.modal';
-
-interface RowData {
-  id: number;
-  divisionName: string;
-}
+import { useGetDivisionQuery } from '../endpoints/divisionApiSlice';
+import { IGetAllDivision } from '../interfaces/division/IGetAllDivision.interface';
 
 const Division = () => {
   const [showCreateDivisionModal, setShowCreateDivisionModal] =
     useState<boolean>(false);
 
-  const columns: TableColumn<RowData>[] = [
+  const columns: TableColumn<IGetAllDivision | undefined>[] = [
     {
       name: 'ID',
-      selector: (row) => row.id,
+      selector: (row) => row?.id ?? '',
       sortable: true,
     },
     {
       name: 'Name',
-      selector: (row) => row.divisionName,
+      selector: (row) => row?.name ?? '',
       sortable: true,
     },
 
@@ -31,7 +28,7 @@ const Division = () => {
             <svg
               stroke="currentColor"
               fill="currentColor"
-              stroke-width="0"
+              strokeWidth="0"
               viewBox="0 0 24 24"
               height="1em"
               width="1em"
@@ -46,7 +43,7 @@ const Division = () => {
             <svg
               stroke="currentColor"
               fill="currentColor"
-              stroke-width="0"
+              strokeWidth="0"
               viewBox="0 0 24 24"
               height="1em"
               width="1em"
@@ -63,28 +60,13 @@ const Division = () => {
     },
   ];
 
-  const data: RowData[] = [
-    {
-      id: 1,
-      divisionName: 'John Doe',
-    },
-    {
-      id: 2,
-      divisionName: 'Jane Smith',
-    },
-    {
-      id: 3,
-      divisionName: 'Jane Smith4',
-    },
-    {
-      id: 4,
-      divisionName: 'Jane Smith4',
-    },
-    {
-      id: 5,
-      divisionName: 'Jane Smith4',
-    },
-  ];
+  const { isLoading, data } = useGetDivisionQuery(undefined);
+  if (isLoading) {
+    return <div>"Loading..."</div>;
+  }
+
+  console.log('[dsdsdsd', data);
+  const divisionData: (IGetAllDivision | undefined)[] = data ? data : [];
   return (
     <Fragment>
       <div>
@@ -94,7 +76,10 @@ const Division = () => {
           {' '}
           Add Division
         </button>
-        <DataTable<RowData> columns={columns} data={data} />
+        <DataTable<IGetAllDivision | undefined>
+          columns={columns}
+          data={divisionData}
+        />
       </div>
 
       {showCreateDivisionModal && (

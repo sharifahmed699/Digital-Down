@@ -2,7 +2,7 @@ import { FC, Fragment } from 'react';
 import { Modal } from 'react-bootstrap';
 import { ICreateDivisionModalProps } from '../../interfaces/modals/createDivision.interface';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useCreateDivisionMutation } from '../../endpoints/authApiSlice';
+import { useCreateDivisionMutation } from '../../endpoints/divisionApiSlice';
 
 export interface ICreateDivisionPayload {
   name: string;

@@ -29,8 +29,6 @@ const LoginPage: FC = () => {
     }
   }, [isLoading, data, dispatch]);
 
-  const auth = useAppSelector((state) => state.auth);
-  console.log('dsdsd', auth.isLoggedIn);
   return (
     <div className="container d-flex align-items-center justify-content-center vh-100">
       <form onSubmit={handleSubmit(onSubmit)} className="w-100 mx-auto">

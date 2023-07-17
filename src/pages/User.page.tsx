@@ -1,54 +1,42 @@
 import { FC, Fragment, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { UserStatusUpdateModal } from '../modals/UserStatusUpdateModal.modal';
-import {
-  useGetDivisionQuery,
-  useGetUserQuery,
-} from '../endpoints/authApiSlice';
-
-interface RowData {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  status: string;
-  age: number;
-}
+import { useGetUserQuery } from '../endpoints/authApiSlice';
+import { IGetAllUser } from '../interfaces/users/IGetAllUser.interface';
 
 const User: FC = () => {
   const [showUserStatusUpdateModal, setShowUserStatusUpdateModal] =
     useState<boolean>(false);
 
-  const columns: TableColumn<RowData>[] = [
+  const columns: TableColumn<IGetAllUser | undefined>[] = [
     {
       name: 'ID',
-      selector: (row) => row.id,
+      selector: (row) => row?.id ?? '',
       sortable: true,
     },
     {
       name: 'Name',
-      selector: (row) => row.name,
+      selector: (row) => row?.name ?? '',
       sortable: true,
     },
     {
       name: 'Email',
-      selector: (row) => row.email,
+      selector: (row) => row?.email ?? '',
       sortable: true,
     },
     {
       name: 'Phone',
-      selector: (row) => row.phone,
+      selector: (row) => row?.genderType ?? '',
       sortable: true,
     },
     {
       name: 'Address',
-      selector: (row) => row.address,
+      selector: (row) => row?.birthday ?? '',
       sortable: true,
     },
     {
       name: 'Age',
-      selector: (row) => row.age,
+      selector: (row) => row?.mobileNumber ?? '',
       sortable: true,
     },
     {
@@ -56,7 +44,7 @@ const User: FC = () => {
       cell: (row) => {
         return (
           <div className="d-flex align-items-center">
-            {row.status}
+            {row?.isRegistered}
             <button
               className="btn btn-link edit-icon pe-0"
               onClick={() => setShowUserStatusUpdateModal(true)}>
@@ -99,65 +87,19 @@ const User: FC = () => {
       button: true,
     },
   ];
-  const { isLoading, data } = useGetUserQuery(undefined);
-  const { data: data3 } = useGetDivisionQuery(undefined);
+  const { isLoading, data } = useGetUserQuery();
 
-  console.log('[dsdsdsd', data, data3);
-  const data1: RowData[] = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      phone: '123-456-7890',
-      address: '123 Street, City',
-      status: 'Pendding',
-      age: 25,
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      phone: '987-654-3210',
-      address: '456 Avenue, Town',
-      status: 'Pendding',
-      age: 10,
-    },
-    {
-      id: 3,
-      name: 'Jane Smith4',
-      email: 'jane@example.com',
-      phone: '987-654-3210',
-      address: '456 Avenue, Town',
-      status: 'Pendding',
-      age: 310,
-    },
-    {
-      id: 4,
-      name: 'Jane Smith4',
-      email: 'jane@example.com',
-      phone: '987-654-3210',
-      address: '456 Avenue, Town',
-      status: 'Pendding',
-      age: 40,
-    },
-    {
-      id: 5,
-      name: 'Jane Smith4',
-      email: 'jane@example.com',
-      phone: '987-654-3210',
-      address: '456 Avenue, Town',
-      status: 'Pendding',
-      age: 40,
-    },
-  ];
+  console.log('[dsdsdsd', data);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  const users: (IGetAllUser | undefined)[] = data?.data ?? [];
   return (
     <Fragment>
       <div>
-        <DataTable<RowData> columns={columns} data={data1} />
+        <DataTable<IGetAllUser | undefined> columns={columns} data={users} />
       </div>
 
       {showUserStatusUpdateModal && (

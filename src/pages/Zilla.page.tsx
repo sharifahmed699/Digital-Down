@@ -1,31 +1,22 @@
 import { Fragment, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CreateZillaModal } from '../modals/division/CreateZillaModal.modal';
-
-interface RowData {
-  id: number;
-  zillaName: string;
-  divisionName: string;
-}
+import { useGetDistrictQuery } from '../endpoints/districtApiSlice';
+import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
 
 const Zilla = () => {
   const [showCreateZillaModal, setShowCreateZillaModal] =
     useState<boolean>(false);
 
-  const columns: TableColumn<RowData>[] = [
+  const columns: TableColumn<IGetAllDistrict | undefined>[] = [
     {
       name: 'ID',
-      selector: (row) => row.id,
+      selector: (row) => row?.id ?? '--',
       sortable: true,
     },
     {
-      name: 'Zilla Name',
-      selector: (row) => row.zillaName,
-      sortable: true,
-    },
-    {
-      name: 'Division Name',
-      selector: (row) => row.divisionName,
+      name: 'District Name',
+      selector: (row) => row?.name ?? '',
       sortable: true,
     },
 
@@ -69,33 +60,12 @@ const Zilla = () => {
     },
   ];
 
-  const data: RowData[] = [
-    {
-      id: 1,
-      zillaName: 'John Doe',
-      divisionName: 'John Doe',
-    },
-    {
-      id: 2,
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith',
-    },
-    {
-      id: 3,
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith4',
-    },
-    {
-      id: 4,
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith4',
-    },
-    {
-      id: 5,
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith4',
-    },
-  ];
+  const { isLoading, data } = useGetDistrictQuery(undefined);
+  if (isLoading) {
+    return <div>"Loading..."</div>;
+  }
+  const districtData: (IGetAllDistrict | undefined)[] = data ? data : [];
+
   return (
     <Fragment>
       <div>
@@ -105,7 +75,10 @@ const Zilla = () => {
           {' '}
           Add Zilla
         </button>
-        <DataTable<RowData> columns={columns} data={data} />
+        <DataTable<IGetAllDistrict | undefined>
+          columns={columns}
+          data={districtData}
+        />
       </div>
 
       {showCreateZillaModal && (

@@ -64,8 +64,6 @@ const Division = () => {
   if (isLoading) {
     return <div>"Loading..."</div>;
   }
-
-  console.log('[dsdsdsd', data);
   const divisionData: (IGetAllDivision | undefined)[] = data ? data : [];
   return (
     <Fragment>

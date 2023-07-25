@@ -1,40 +1,24 @@
 import { Fragment, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CreateUpoZillaModal } from '../modals/upoZilla/CreateUpoZillaModal.modal';
-
-interface RowData {
-  id: number;
-  upoZillaName: string;
-  zillaName: string;
-  divisionName: string;
-}
+import { useGetUpoZilaQuery } from '../endpoints/upoZillaApiSlice';
+import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
 
 const UpoZilla = () => {
   const [showCreateUpoZillaModal, setShowCreateUpoZillaModal] =
     useState<boolean>(false);
 
-  const columns: TableColumn<RowData>[] = [
+  const columns: TableColumn<IGetAllDistrict | undefined>[] = [
     {
       name: 'ID',
-      selector: (row) => row.id,
-      sortable: true,
-    },
-    {
-      name: 'Zilla Name',
-      selector: (row) => row.zillaName,
+      selector: (row) => row?.id ?? '--',
       sortable: true,
     },
     {
       name: 'Upozilla Name',
-      selector: (row) => row.upoZillaName,
+      selector: (row) => row?.name ?? '',
       sortable: true,
     },
-    {
-      name: 'Division Name',
-      selector: (row) => row.divisionName,
-      sortable: true,
-    },
-
     {
       name: 'Action',
       cell: () => (
@@ -74,39 +58,12 @@ const UpoZilla = () => {
       button: true,
     },
   ];
+  const { isLoading, data } = useGetUpoZilaQuery(undefined);
+  if (isLoading) {
+    return <div>"Loading..."</div>;
+  }
+  const upoZilaData: (IGetAllDistrict | undefined)[] = data ? data : [];
 
-  const data: RowData[] = [
-    {
-      id: 1,
-      upoZillaName: 'John Doe',
-      zillaName: 'John Doe',
-      divisionName: 'John Doe',
-    },
-    {
-      id: 2,
-      upoZillaName: 'John Doe',
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith',
-    },
-    {
-      id: 3,
-      upoZillaName: 'John Doe',
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith4',
-    },
-    {
-      id: 4,
-      upoZillaName: 'John Doe',
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith4',
-    },
-    {
-      id: 5,
-      upoZillaName: 'John Doe',
-      zillaName: 'John Doe',
-      divisionName: 'Jane Smith4',
-    },
-  ];
   return (
     <Fragment>
       <div>
@@ -116,7 +73,10 @@ const UpoZilla = () => {
           {' '}
           Add UpoZilla
         </button>
-        <DataTable<RowData> columns={columns} data={data} />
+        <DataTable<IGetAllDistrict | undefined>
+          columns={columns}
+          data={upoZilaData}
+        />
       </div>
 
       {showCreateUpoZillaModal && (

@@ -6,6 +6,7 @@ const divisionApi = apiSlice.injectEndpoints({
     getDivision: builder.query<IGetAllDivision[], void>({
       query: () => '/divisions',
       keepUnusedDataFor: 600,
+      providesTags: ['create/division'],
     }),
     createDivision: builder.mutation({
       query: (data) => ({
@@ -13,7 +14,7 @@ const divisionApi = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['admin/allUsers'],
+      invalidatesTags: ['create/division'],
     }),
   }),
 });

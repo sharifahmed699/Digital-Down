@@ -10,6 +10,7 @@ const UsersPage = lazy(() => import('../../src/pages/User.page'));
 const DivisionPage = lazy(() => import('../../src/pages/Division.page'));
 const ZillaPage = lazy(() => import('../../src/pages/Zilla.page'));
 const UpoZillaPage = lazy(() => import('../../src/pages/Upozilla.page'));
+const PouroSovaPage = lazy(() => import('../../src/pages/PouroSova.page'));
 
 const AppRoutes: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/division" element={<DivisionPage />} />
           <Route path="/zilla" element={<ZillaPage />} />
           <Route path="/upo-zilla" element={<UpoZillaPage />} />
+          <Route path="/pourosova" element={<PouroSovaPage />} />
         </Route>
       </Route>
     </Routes>

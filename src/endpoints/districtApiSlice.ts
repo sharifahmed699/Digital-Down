@@ -6,6 +6,7 @@ const districtApi = apiSlice.injectEndpoints({
     getDistrict: builder.query<IGetAllDistrict[], void>({
       query: () => '/districts',
       keepUnusedDataFor: 600,
+      providesTags: ['admin/allUsers'],
     }),
     createDistrict: builder.mutation({
       query: (data) => ({

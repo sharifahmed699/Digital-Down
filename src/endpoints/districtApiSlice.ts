@@ -1,3 +1,4 @@
+import { ICreateZillaPayload } from '../interfaces/district/ICreateDistrictPayload.interface';
 import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
 import { apiSlice } from './apiSlice';
 
@@ -6,15 +7,15 @@ const districtApi = apiSlice.injectEndpoints({
     getDistrict: builder.query<IGetAllDistrict[], void>({
       query: () => '/districts',
       keepUnusedDataFor: 600,
-      providesTags: ['admin/allUsers'],
+      providesTags: ['admin/createDistrict'],
     }),
     createDistrict: builder.mutation({
-      query: (data) => ({
+      query: (data: ICreateZillaPayload) => ({
         url: '/admin/create/district',
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['admin/allUsers'],
+      invalidatesTags: ['admin/createDistrict'],
     }),
   }),
 });

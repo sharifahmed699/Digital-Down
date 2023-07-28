@@ -23,7 +23,6 @@ export const CreateDivisionModal: FC<ICreateDivisionModalProps> = ({
   const handleCreateDivision: SubmitHandler<ICreateDivisionPayload> = (
     data
   ) => {
-    console.log('division', data);
     createDivision(data);
   };
   return (

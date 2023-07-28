@@ -73,7 +73,7 @@ const Zilla = () => {
           className="btn btn-primary"
           onClick={() => setShowCreateZillaModal(true)}>
           {' '}
-          Add Zilla
+          Add District
         </button>
         <DataTable<IGetAllDistrict | undefined>
           columns={columns}

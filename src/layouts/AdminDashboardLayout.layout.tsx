@@ -119,7 +119,7 @@ const AdminDashboardLayout = () => {
                         <path d="M11 6h2v2h-2zm4 0h2v2h-2zm0 4.031h2V12h-2zM15 14h2v2h-2zm-8 .001h2v2H7z"></path>
                       </svg>
                     </span>
-                    <span>Zilla</span>
+                    <span>District</span>
                   </NavLink>
                 </li>
                 <li className="nav-item">

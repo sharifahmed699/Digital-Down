@@ -3,11 +3,9 @@ import { Modal } from 'react-bootstrap';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import Select, { createFilter } from 'react-select';
 import { ICreateZillaModalProps } from '../../interfaces/modals/createZilla.interface';
-
-export interface ICreateZillaPayload {
-  zillaName: string;
-  divisionName: string;
-}
+import { useGetDivisionQuery } from '../../endpoints/divisionApiSlice';
+import { useCreateDistrictMutation } from '../../endpoints/districtApiSlice';
+import { ICreateZillaPayload } from '../../interfaces/district/ICreateDistrictPayload.interface';
 
 export interface IOption {
   label: string;
@@ -26,13 +24,16 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
     control,
   } = useForm<ICreateZillaPayload>();
 
+  const [createDistrict] = useCreateDistrictMutation();
+  const { isLoading, data } = useGetDivisionQuery(undefined);
   const handleCreateDivision: SubmitHandler<ICreateZillaPayload> = (data) => {
-    console.log('division', data);
+    createDistrict(data);
   };
-  const divisionOptions = [
-    { label: 'dhaka', value: 'dhaka' },
-    { label: 'rajshahi', value: 'rajshahi' },
-  ];
+
+  const divisionOptions = data?.map((item) => ({
+    label: item.name,
+    value: item.id.toString(),
+  }));
   const reactSelectFilterConfig = {
     ignoreCase: true,
     ignoreAccents: true,
@@ -40,6 +41,9 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
     matchFrom: 'any' as const,
     trim: true,
   };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <Fragment>
       <Modal
@@ -53,28 +57,24 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
             onHide={() => {
               clearErrors();
             }}>
-            <Modal.Title>Create Zilla</Modal.Title>
+            <Modal.Title>Create District</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">
               <div className="col-12">
                 <div className="mb-3">
                   <label className="form-label">
-                    Zilla Name <span className="text-danger">*</span>
+                    District Name <span className="text-danger">*</span>
                   </label>
                   <input
-                    {...register('zillaName', {
-                      required: 'Zilla Name is required',
+                    {...register('name', {
+                      required: 'District Name is required',
                     })}
                     type="text"
-                    className={`form-control ${
-                      errors.zillaName && 'is-invalid'
-                    }`}
-                    placeholder="Zilla Name"
+                    className={`form-control ${errors.name && 'is-invalid'}`}
+                    placeholder="District Name"
                   />
-                  <small className="text-danger">
-                    {errors.zillaName?.message}
-                  </small>
+                  <small className="text-danger">{errors.name?.message}</small>
                 </div>
               </div>
               <div className="mb-3">
@@ -82,7 +82,7 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
                   Division Name <span className="text-danger">*</span>
                 </label>
                 <Controller
-                  name="divisionName"
+                  name="divisionId"
                   control={control}
                   render={({ field: { name, onChange, ref, value } }) => (
                     <Select
@@ -104,7 +104,7 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
                   )}
                 />
                 <small className="text-danger">
-                  {errors.divisionName?.message}
+                  {errors.divisionId?.message}
                 </small>
               </div>
             </div>

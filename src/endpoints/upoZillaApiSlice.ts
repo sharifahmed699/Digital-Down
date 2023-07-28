@@ -6,6 +6,7 @@ const upoZillaApi = apiSlice.injectEndpoints({
     getUpoZila: builder.query<IGetAllDistrict[], void>({
       query: () => '/upozilas',
       keepUnusedDataFor: 600,
+      providesTags: ['admin/createUpoZilla'],
     }),
     createUpoZila: builder.mutation({
       query: (data) => ({
@@ -13,7 +14,7 @@ const upoZillaApi = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['admin/allUsers'],
+      invalidatesTags: ['admin/createUpoZilla'],
     }),
   }),
 });

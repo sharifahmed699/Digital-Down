@@ -19,12 +19,15 @@ export const CreateDivisionModal: FC<ICreateDivisionModalProps> = ({
     formState: { errors },
   } = useForm<ICreateDivisionPayload>();
 
-  const [createDivision] = useCreateDivisionMutation();
+  const [createDivision, { isSuccess }] = useCreateDivisionMutation();
   const handleCreateDivision: SubmitHandler<ICreateDivisionPayload> = (
     data
   ) => {
     createDivision(data);
   };
+  if (isSuccess) {
+    setShowCreateDivisionModal(false);
+  }
   return (
     <Fragment>
       <Modal

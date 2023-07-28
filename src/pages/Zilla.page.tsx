@@ -62,7 +62,7 @@ const Zilla = () => {
 
   const { isLoading, data } = useGetDistrictQuery(undefined);
   if (isLoading) {
-    return <div>"Loading..."</div>;
+    return <div>Loading...</div>;
   }
   const districtData: (IGetAllDistrict | undefined)[] = data ? data : [];
 

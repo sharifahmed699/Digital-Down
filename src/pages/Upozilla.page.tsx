@@ -60,7 +60,7 @@ const UpoZilla = () => {
   ];
   const { isLoading, data } = useGetUpoZilaQuery(undefined);
   if (isLoading) {
-    return <div>"Loading..."</div>;
+    return <div>Loading...</div>;
   }
   const upoZilaData: (IGetAllDistrict | undefined)[] = data ? data : [];
 

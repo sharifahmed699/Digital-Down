@@ -13,6 +13,12 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['admin/allUsers', 'create/division', 'admin/createDistrict'],
+  tagTypes: [
+    'admin/allUsers',
+    'create/division',
+    'admin/createDistrict',
+    'admin/createUpoZilla',
+    'admin/createPouroSova',
+  ],
   endpoints: () => ({}),
 });

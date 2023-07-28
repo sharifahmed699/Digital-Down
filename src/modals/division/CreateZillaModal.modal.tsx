@@ -24,7 +24,7 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
     control,
   } = useForm<ICreateZillaPayload>();
 
-  const [createDistrict] = useCreateDistrictMutation();
+  const [createDistrict, { isSuccess }] = useCreateDistrictMutation();
   const { isLoading, data } = useGetDivisionQuery(undefined);
   const handleCreateDivision: SubmitHandler<ICreateZillaPayload> = (data) => {
     createDistrict(data);
@@ -41,6 +41,9 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
     matchFrom: 'any' as const,
     trim: true,
   };
+  if (isSuccess) {
+    setShowCreateZillaModal(false);
+  }
   if (isLoading) {
     return <div>Loading...</div>;
   }

@@ -3,11 +3,10 @@ import { Modal } from 'react-bootstrap';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import Select, { createFilter } from 'react-select';
 import { ICreatePouroSovaModalProps } from '../../interfaces/modals/createPouroSovainterface';
-
-export interface ICreateUpoZillaPayload {
-  upoZillaName: string;
-  zillaName: string;
-}
+import { ICreateUpoZillaPayload } from '../../interfaces/upozilla/ICreateUpoZillaPayload.interface';
+import { ICreatePouroSovaPayload } from '../../interfaces/pouroSova/ICreatePouroSovaPayload.interface';
+import { useGetUpoZilaQuery } from '../../endpoints/upoZillaApiSlice';
+import { useCreatePouroSovaMutation } from '../../endpoints/pouroSovaApiSlice';
 
 export interface IOption {
   label: string;
@@ -24,17 +23,19 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
     clearErrors,
     formState: { errors },
     control,
-  } = useForm<ICreateUpoZillaPayload>();
+  } = useForm<ICreatePouroSovaPayload>();
 
-  const handleCreateDivision: SubmitHandler<ICreateUpoZillaPayload> = (
+  const { isLoading, data } = useGetUpoZilaQuery(undefined);
+  const [createPouroSova, { isSuccess }] = useCreatePouroSovaMutation();
+  const handleCreateDivision: SubmitHandler<ICreatePouroSovaPayload> = (
     data
   ) => {
-    console.log('division', data);
+    createPouroSova(data);
   };
-  const zillaOptions = [
-    { label: 'dhaka', value: 'dhaka' },
-    { label: 'rajshahi', value: 'rajshahi' },
-  ];
+  const upoZillaOptions = data?.map((item) => ({
+    label: item.name,
+    value: item.id.toString(),
+  }));
   const reactSelectFilterConfig = {
     ignoreCase: true,
     ignoreAccents: true,
@@ -42,6 +43,14 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
     matchFrom: 'any' as const,
     trim: true,
   };
+
+  if (isSuccess) {
+    setShowCreatePouroSovaModal(false);
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <Fragment>
       <Modal
@@ -55,28 +64,24 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
             onHide={() => {
               clearErrors();
             }}>
-            <Modal.Title>Create UpoZilla</Modal.Title>
+            <Modal.Title>Create Pouro Sova</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">
               <div className="col-12">
                 <div className="mb-3">
                   <label className="form-label">
-                    UpoZilla Name <span className="text-danger">*</span>
+                    Pouro Sova Name <span className="text-danger">*</span>
                   </label>
                   <input
-                    {...register('upoZillaName', {
-                      required: 'Upo Zilla Name is required',
+                    {...register('name', {
+                      required: 'pouro sova Name is required',
                     })}
                     type="text"
-                    className={`form-control ${
-                      errors.upoZillaName && 'is-invalid'
-                    }`}
-                    placeholder="UpoZilla Name"
+                    className={`form-control ${errors.name && 'is-invalid'}`}
+                    placeholder="PouroSova Name"
                   />
-                  <small className="text-danger">
-                    {errors.upoZillaName?.message}
-                  </small>
+                  <small className="text-danger">{errors.name?.message}</small>
                 </div>
               </div>
               <div className="mb-3">
@@ -84,7 +89,7 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
                   Zilla Name <span className="text-danger">*</span>
                 </label>
                 <Controller
-                  name="zillaName"
+                  name="upozilaId"
                   control={control}
                   render={({ field: { name, onChange, ref, value } }) => (
                     <Select
@@ -94,10 +99,10 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
                         IndicatorSeparator: () => null,
                       }}
                       filterOption={createFilter(reactSelectFilterConfig)}
-                      value={zillaOptions?.filter((option: IOption) => {
+                      value={upoZillaOptions?.filter((option: IOption) => {
                         return value?.includes(option.value as string);
                       })}
-                      options={zillaOptions}
+                      options={upoZillaOptions}
                       onChange={(selectedOption: IOption | null) => {
                         const newValue = selectedOption?.value || '';
                         onChange(newValue);
@@ -106,7 +111,7 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
                   )}
                 />
                 <small className="text-danger">
-                  {errors.zillaName?.message}
+                  {errors.upozilaId?.message}
                 </small>
               </div>
             </div>

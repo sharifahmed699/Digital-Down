@@ -3,11 +3,9 @@ import { Modal } from 'react-bootstrap';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import Select, { createFilter } from 'react-select';
 import { ICreateUpoZillaModalProps } from '../../interfaces/modals/createUpoZilla.interface';
-
-export interface ICreateUpoZillaPayload {
-  upoZillaName: string;
-  zillaName: string;
-}
+import { useGetDistrictQuery } from '../../endpoints/districtApiSlice';
+import { useCreateUpoZilaMutation } from '../../endpoints/upoZillaApiSlice';
+import { ICreateUpoZillaPayload } from '../../interfaces/upozilla/ICreateUpoZillaPayload.interface';
 
 export interface IOption {
   label: string;
@@ -26,15 +24,18 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
     control,
   } = useForm<ICreateUpoZillaPayload>();
 
+  const { isLoading, data } = useGetDistrictQuery(undefined);
+  const [createUpoZila, { isSuccess }] = useCreateUpoZilaMutation();
   const handleCreateDivision: SubmitHandler<ICreateUpoZillaPayload> = (
     data
   ) => {
-    console.log('division', data);
+    createUpoZila(data);
   };
-  const zillaOptions = [
-    { label: 'dhaka', value: 'dhaka' },
-    { label: 'rajshahi', value: 'rajshahi' },
-  ];
+
+  const zillaOptions = data?.map((item) => ({
+    label: item.name,
+    value: item.id.toString(),
+  }));
   const reactSelectFilterConfig = {
     ignoreCase: true,
     ignoreAccents: true,
@@ -42,6 +43,13 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
     matchFrom: 'any' as const,
     trim: true,
   };
+
+  if (isSuccess) {
+    setShowCreateUpoZillaModal(false);
+  }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <Fragment>
       <Modal
@@ -65,18 +73,14 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
                     UpoZilla Name <span className="text-danger">*</span>
                   </label>
                   <input
-                    {...register('upoZillaName', {
+                    {...register('name', {
                       required: 'Upo Zilla Name is required',
                     })}
                     type="text"
-                    className={`form-control ${
-                      errors.upoZillaName && 'is-invalid'
-                    }`}
+                    className={`form-control ${errors.name && 'is-invalid'}`}
                     placeholder="UpoZilla Name"
                   />
-                  <small className="text-danger">
-                    {errors.upoZillaName?.message}
-                  </small>
+                  <small className="text-danger">{errors.name?.message}</small>
                 </div>
               </div>
               <div className="mb-3">
@@ -84,7 +88,7 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
                   Zilla Name <span className="text-danger">*</span>
                 </label>
                 <Controller
-                  name="zillaName"
+                  name="districtId"
                   control={control}
                   render={({ field: { name, onChange, ref, value } }) => (
                     <Select
@@ -106,7 +110,7 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
                   )}
                 />
                 <small className="text-danger">
-                  {errors.zillaName?.message}
+                  {errors.districtId?.message}
                 </small>
               </div>
             </div>

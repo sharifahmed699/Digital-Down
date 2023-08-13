@@ -1,11 +1,14 @@
 import { ICreateZillaPayload } from '../interfaces/district/ICreateDistrictPayload.interface';
-import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
+import {
+  IGetAllDistrict,
+  IResponse,
+} from '../interfaces/district/IGetAllDistrict.interface';
 import { apiSlice } from './apiSlice';
 
 const districtApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getDistrict: builder.query<IGetAllDistrict[], void>({
-      query: () => '/districts',
+    getDistrict: builder.query<IResponse<IGetAllDistrict>, void>({
+      query: () => '/admin/districts',
       keepUnusedDataFor: 600,
       providesTags: ['admin/createDistrict'],
     }),

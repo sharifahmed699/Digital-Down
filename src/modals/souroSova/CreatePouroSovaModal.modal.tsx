@@ -32,7 +32,7 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
   ) => {
     createPouroSova(data);
   };
-  const upoZillaOptions = data?.map((item) => ({
+  const upoZillaOptions = data?.data?.map((item: any) => ({
     label: item.name,
     value: item.id.toString(),
   }));

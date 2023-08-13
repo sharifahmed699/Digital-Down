@@ -64,7 +64,9 @@ const Zilla = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  const districtData: (IGetAllDistrict | undefined)[] = data ? data : [];
+  const districtData: (IGetAllDistrict | undefined)[] = data?.data
+    ? data.data
+    : [];
 
   return (
     <Fragment>

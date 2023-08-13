@@ -32,7 +32,7 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
     createUpoZila(data);
   };
 
-  const zillaOptions = data?.map((item) => ({
+  const zillaOptions = data?.data?.map((item: any) => ({
     label: item.name,
     value: item.id.toString(),
   }));

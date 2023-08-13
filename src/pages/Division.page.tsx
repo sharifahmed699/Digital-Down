@@ -60,11 +60,13 @@ const Division = () => {
     },
   ];
 
-  const { isLoading, data } = useGetDivisionQuery(undefined);
+  const { isLoading, data } = useGetDivisionQuery();
   if (isLoading) {
     return <div>"Loading..."</div>;
   }
-  const divisionData: (IGetAllDivision | undefined)[] = data ? data : [];
+  const divisionData: (IGetAllDivision | undefined)[] = data?.data
+    ? data.data
+    : [];
   return (
     <Fragment>
       <div>

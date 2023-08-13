@@ -62,7 +62,9 @@ const UpoZilla = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  const upoZilaData: (IGetAllDistrict | undefined)[] = data ? data : [];
+  const upoZilaData: (IGetAllDistrict | undefined)[] = data?.data
+    ? data.data
+    : [];
 
   return (
     <Fragment>

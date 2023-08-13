@@ -4,6 +4,7 @@ import { CreateUpoZillaModal } from '../modals/upoZilla/CreateUpoZillaModal.moda
 import { useGetUpoZilaQuery } from '../endpoints/upoZillaApiSlice';
 import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
 import { CreatePouroSovaModal } from '../modals/souroSova/CreatePouroSovaModal.modal';
+import { useGetPouroSovaQuery } from '../endpoints/pouroSovaApiSlice';
 
 const PouroSova = () => {
   const [showCreatePouroSovaModal, setShowCreatePouroSovaModal] =
@@ -59,11 +60,13 @@ const PouroSova = () => {
       button: true,
     },
   ];
-  const { isLoading, data } = useGetUpoZilaQuery(undefined);
+  const { isLoading, data } = useGetPouroSovaQuery(undefined);
   if (isLoading) {
     return <div>"Loading..."</div>;
   }
-  const upoZilaData: (IGetAllDistrict | undefined)[] = data ? data : [];
+  const upoZilaData: (IGetAllDistrict | undefined)[] = data?.data
+    ? data.data
+    : [];
 
   return (
     <Fragment>

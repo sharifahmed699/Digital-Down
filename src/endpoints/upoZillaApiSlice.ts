@@ -1,10 +1,13 @@
-import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
+import {
+  IGetAllDistrict,
+  IResponse,
+} from '../interfaces/district/IGetAllDistrict.interface';
 import { apiSlice } from './apiSlice';
 
 const upoZillaApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUpoZila: builder.query<IGetAllDistrict[], void>({
-      query: () => '/upozilas',
+    getUpoZila: builder.query<IResponse<IGetAllDistrict>, void>({
+      query: () => '/admin/upozilas',
       keepUnusedDataFor: 600,
       providesTags: ['admin/createUpoZilla'],
     }),

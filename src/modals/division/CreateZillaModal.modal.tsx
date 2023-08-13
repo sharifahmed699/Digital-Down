@@ -30,7 +30,7 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
     createDistrict(data);
   };
 
-  const divisionOptions = data?.map((item) => ({
+  const divisionOptions = data?.data?.map((item: any) => ({
     label: item.name,
     value: item.id.toString(),
   }));

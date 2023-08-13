@@ -1,11 +1,14 @@
-import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
+import {
+  IGetAllDistrict,
+  IResponse,
+} from '../interfaces/district/IGetAllDistrict.interface';
 import { ICreatePouroSovaPayload } from '../interfaces/pouroSova/ICreatePouroSovaPayload.interface';
 import { apiSlice } from './apiSlice';
 
 const pouroShovaApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getPouroSova: builder.query<IGetAllDistrict[], void>({
-      query: () => '/pourosovas',
+    getPouroSova: builder.query<IResponse<IGetAllDistrict>, void>({
+      query: () => '/admin/pourosovas',
       keepUnusedDataFor: 600,
       providesTags: ['admin/createPouroSova'],
     }),

@@ -30,44 +30,60 @@ const LoginPage: FC = () => {
   }, [isLoading, data, dispatch]);
 
   return (
-    <div className="container d-flex align-items-center justify-content-center vh-100">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-100 mx-auto">
-        <div className="mb-3">
-          <label htmlFor="mobileNumber" className="form-label">
-            Phone Number
-          </label>
-          <input
-            type="text"
-            id="mobileNumber"
-            className={`form-control ${errors.mobileNumber && 'is-invalid'}`}
-            {...register('mobileNumber', {
-              required: 'Phone Number is required',
-            })}
-          />
-          {errors.mobileNumber && (
-            <p className="text-danger">{errors.mobileNumber.message}</p>
-          )}
+    <div className="container">
+      <div className="row">
+        <div className="col-md-6 offset-md-3">
+          <div className="card my-5">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="card-body cardbody-color p-lg-5">
+              <div className="text-center">
+                <img
+                  src="https://cdn.pixabay.com/photo/2016/03/31/19/56/avatar-1295397__340.png"
+                  className="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+                  width="200px"
+                  alt="profile"
+                />
+              </div>{' '}
+              <div className="mb-3">
+                <input
+                  type="text"
+                  id="mobileNumber"
+                  placeholder="Phone number"
+                  className={`form-control ${
+                    errors.mobileNumber && 'is-invalid'
+                  }`}
+                  {...register('mobileNumber', {
+                    required: 'Phone Number is required',
+                  })}
+                />
+                {errors.mobileNumber && (
+                  <p className="text-danger">{errors.mobileNumber.message}</p>
+                )}
+              </div>{' '}
+              <div className="mb-3">
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Password"
+                  className={`form-control ${errors.password && 'is-invalid'}`}
+                  {...register('password', {
+                    required: 'Password is required',
+                  })}
+                />
+                {errors.password && (
+                  <p className="text-danger">{errors.password.message}</p>
+                )}
+              </div>
+              <div className="text-center">
+                <button type="submit" className="btn btn-dark px-5 mb-5 w-100">
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            className={`form-control ${errors.password && 'is-invalid'}`}
-            {...register('password', { required: 'Password is required' })}
-          />
-          {errors.password && (
-            <p className="text-danger">{errors.password.message}</p>
-          )}
-        </div>
-
-        <button type="submit" className="btn btn-primary" disabled={isLoading}>
-          Submit
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

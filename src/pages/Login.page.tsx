@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch } from '../store/hooks';
 import { setToken } from '../store/authSlice';
 import { useAuthLoginMutation } from '../endpoints/authApiSlice';
 

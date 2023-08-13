@@ -1,13 +1,14 @@
-import React, { Fragment, Suspense } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Fragment, Suspense } from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
 
 const AdminDashboardLayout = () => {
+  const sidebarHeight = `calc(100vh - 60px - 56px)`;
   return (
     <Fragment>
       <div className="container-fluid">
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <a className="navbar-brand" href="#">
-            Project Name
+            Digital Town
           </a>
           <button
             className="navbar-toggler"
@@ -20,18 +21,56 @@ const AdminDashboardLayout = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div
-            className="collapse navbar-collapse"
-            id="navbarSupportedContent"></div>
+            className="collapse navbar-collapse justify-content-end"
+            id="navbarSupportedContent">
+            <ul className="navbar-nav">
+              <li className="nav-item dropdown">
+                <a
+                  className="nav-link dropdown-toggle"
+                  href="#"
+                  id="navbarDropdownMenuLink"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  User Name
+                </a>
+                <ul
+                  className="dropdown-menu dropdown-menu-end"
+                  style={{ maxWidth: '100vw' }}
+                  aria-labelledby="navbarDropdownMenuLink">
+                  <li>
+                    <a className="dropdown-item" href="#">
+                      Action
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="#">
+                      LogOut
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </nav>
         <div className="row">
-          <div className="col-md-3 col-lg-2">
-            <div className="bg-dark text-light sidebar">
-              <ul className="nav flex-column">
+          <div className="col-md-3 col-lg-2 d-none d-md-block">
+            <div
+              className="bg-dark opacity-90 text-light sidebar"
+              style={{
+                height: 'calc(100% - 116px)',
+                position: 'fixed',
+                padding: '22px',
+                margin: 0,
+              }}>
+              <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item">
                   <NavLink
                     to="/dashboard"
                     className={(navData) =>
-                      navData.isActive ? 'nav-link active' : 'nav-link'
+                      navData.isActive
+                        ? 'nav-link active opacity-100'
+                        : 'nav-link'
                     }>
                     <span className="me-2">
                       <svg
@@ -171,9 +210,6 @@ const AdminDashboardLayout = () => {
           </div>
           <div className="col-md-9 col-lg-10 p-0">
             <div className="card mt-2 me-2">
-              <div className="card-header">
-                <h4>Welcome to the Dashboard!</h4>
-              </div>
               <div className="card-body">
                 <Suspense fallback={'Loading...'}>
                   <Outlet />
@@ -182,8 +218,8 @@ const AdminDashboardLayout = () => {
             </div>
           </div>
         </div>
-        <footer className="bg-dark text-light text-center py-3 fixed-bottom">
-          &copy; 2023 Your App. All rights reserved.
+        <footer className="bg-dark opacity-75 text-light text-center py-3 fixed-bottom">
+          &copy; 2023 Digital Town. All rights reserved.
         </footer>
       </div>
     </Fragment>

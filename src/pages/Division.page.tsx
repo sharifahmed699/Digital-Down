@@ -62,7 +62,11 @@ const Division = () => {
 
   const { isLoading, data } = useGetDivisionQuery();
   if (isLoading) {
-    return <div>"Loading..."</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center loader-height bg-dark bg-opacity-10">
+        <div>Loading...</div>
+      </div>
+    );
   }
   const divisionData: (IGetAllDivision | undefined)[] = data?.data
     ? data.data

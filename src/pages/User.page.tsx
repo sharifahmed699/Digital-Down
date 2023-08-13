@@ -90,7 +90,11 @@ const User: FC = () => {
   const { isLoading, data } = useGetUserQuery();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center loader-height bg-dark bg-opacity-10">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   const users: (IGetAllUser | undefined)[] = data?.data ?? [];

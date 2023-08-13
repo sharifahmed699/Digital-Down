@@ -76,7 +76,16 @@ const LoginPage: FC = () => {
                 )}
               </div>
               <div className="text-center">
-                <button type="submit" className="btn btn-dark px-5 mb-5 w-100">
+                <button
+                  type="submit"
+                  className="btn btn-dark px-5 mb-5 w-100"
+                  disabled={isLoading}>
+                  {isLoading && (
+                    <span
+                      className="spinner-border spinner-border-sm mx-3"
+                      role="status"
+                      aria-hidden="true"></span>
+                  )}
                   Login
                 </button>
               </div>

@@ -85,7 +85,9 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
               clearErrors();
               handleCloseModal();
             }}>
-            <Modal.Title>Create UpoZilla</Modal.Title>
+            <Modal.Title>
+              {editUpoZillaData ? 'Update' : 'Create'} UpoZilla
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">

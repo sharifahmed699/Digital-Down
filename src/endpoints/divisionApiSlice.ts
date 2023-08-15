@@ -2,7 +2,6 @@ import {
   IGetAllDistrict,
   IResponse,
 } from '../interfaces/district/IGetAllDistrict.interface';
-import { IGetAllDivision } from '../interfaces/division/IGetAllDivision.interface';
 import { apiSlice } from './apiSlice';
 
 const divisionApi = apiSlice.injectEndpoints({
@@ -20,7 +19,27 @@ const divisionApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['create/division'],
     }),
+    editDivision: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/admin/edit/division/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['create/division'],
+    }),
+    deleteDivision: builder.mutation({
+      query: (id: number) => ({
+        url: `/admin/delete/division/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['create/division'],
+    }),
   }),
 });
 
-export const { useGetDivisionQuery, useCreateDivisionMutation } = divisionApi;
+export const {
+  useGetDivisionQuery,
+  useCreateDivisionMutation,
+  useEditDivisionMutation,
+  useDeleteDivisionMutation,
+} = divisionApi;

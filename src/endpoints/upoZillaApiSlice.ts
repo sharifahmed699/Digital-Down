@@ -22,7 +22,7 @@ const upoZillaApi = apiSlice.injectEndpoints({
     editUpoZila: builder.mutation({
       query: ({ id, data }) => ({
         url: `/admin/edit/upozila/${id}`,
-        method: 'PUT', // Use PUT method for editing
+        method: 'PUT',
         body: data,
       }),
       invalidatesTags: ['admin/createUpoZilla'],

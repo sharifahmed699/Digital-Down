@@ -15,7 +15,7 @@ const UpoZilla = () => {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [editUpoZillaData, setEditUpoZillaData] = useState<
     IGetAllDistrict | undefined
-  >(undefined); // Step 1
+  >(undefined);
 
   const handleEditClick = (rowData: IGetAllDistrict | undefined) => {
     setEditUpoZillaData(rowData); // Step 2

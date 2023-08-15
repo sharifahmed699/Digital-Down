@@ -1,12 +1,18 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CreateUpoZillaModal } from '../modals/upoZilla/CreateUpoZillaModal.modal';
-import { useGetUpoZilaQuery } from '../endpoints/upoZillaApiSlice';
+import {
+  useDeleteUpoZilaMutation,
+  useGetUpoZilaQuery,
+} from '../endpoints/upoZillaApiSlice';
 import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
+import { DeleteModal } from '../modals/DeleteModal.modal';
+import { toast } from 'react-hot-toast';
 
 const UpoZilla = () => {
   const [showCreateUpoZillaModal, setShowCreateUpoZillaModal] =
     useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [editUpoZillaData, setEditUpoZillaData] = useState<
     IGetAllDistrict | undefined
   >(undefined); // Step 1
@@ -45,7 +51,12 @@ const UpoZilla = () => {
               <path d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2z"></path>
             </svg>
           </button>
-          <button className="btn btn-link delete-icon pe-0">
+          <button
+            className="btn btn-link delete-icon pe-0"
+            onClick={() => {
+              setShowDeleteModal(true);
+              setEditUpoZillaData(row);
+            }}>
             <svg
               stroke="currentColor"
               fill="currentColor"
@@ -66,6 +77,19 @@ const UpoZilla = () => {
     },
   ];
   const { isLoading, data } = useGetUpoZilaQuery(undefined);
+  const [deleteUpoZila, { isLoading: isDeleteLoading, isSuccess }] =
+    useDeleteUpoZilaMutation();
+
+  const handleDelete = (id: number) => {
+    deleteUpoZila(id);
+  };
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Successfully Delete !!');
+      setShowDeleteModal(false);
+      setEditUpoZillaData(undefined);
+    }
+  }, [isSuccess]);
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center loader-height bg-dark bg-opacity-10">
@@ -98,6 +122,16 @@ const UpoZilla = () => {
           setShowCreateUpoZillaModal={setShowCreateUpoZillaModal}
           editUpoZillaData={editUpoZillaData}
           setEditUpoZillaData={setEditUpoZillaData}
+        />
+      )}
+      {showDeleteModal && (
+        <DeleteModal
+          showDeleteModal={showDeleteModal}
+          setShowDeleteModal={setShowDeleteModal}
+          handleDelete={handleDelete}
+          deletedId={editUpoZillaData?.id}
+          isDeleteLoading={isDeleteLoading}
+          setClearData={setEditUpoZillaData}
         />
       )}
     </Fragment>

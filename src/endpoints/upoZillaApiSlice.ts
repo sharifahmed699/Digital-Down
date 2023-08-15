@@ -27,6 +27,13 @@ const upoZillaApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['admin/createUpoZilla'],
     }),
+    deleteUpoZila: builder.mutation({
+      query: (id: number) => ({
+        url: `/admin/delete/upozila/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['admin/createUpoZilla'],
+    }),
   }),
 });
 
@@ -34,4 +41,5 @@ export const {
   useCreateUpoZilaMutation,
   useGetUpoZilaQuery,
   useEditUpoZilaMutation,
+  useDeleteUpoZilaMutation,
 } = upoZillaApi;

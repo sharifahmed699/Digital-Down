@@ -71,9 +71,6 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
     setShowCreateUpoZillaModal(false);
     setEditUpoZillaData(undefined);
   };
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   return (
     <Fragment>
       <Modal

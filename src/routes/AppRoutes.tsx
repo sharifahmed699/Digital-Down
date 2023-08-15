@@ -21,7 +21,7 @@ const AppRoutes: React.FC = () => {
 
       <Route element={<CheckAuthentication page="private" />}>
         <Route element={<AdminDashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
           <Route path="/user" element={<UsersPage />} />
           <Route path="/division" element={<DivisionPage />} />
           <Route path="/zilla" element={<ZillaPage />} />

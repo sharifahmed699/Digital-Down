@@ -1,8 +1,15 @@
 import { Fragment, Suspense } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { logout } from '../store/authSlice';
+import { useAppDispatch } from '../store/hooks';
 
 const AdminDashboardLayout = () => {
-  const sidebarHeight = `calc(100vh - 60px - 56px)`;
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+
+    localStorage.removeItem('token');
+  };
   return (
     <Fragment>
       <div className="container-fluid">
@@ -44,7 +51,10 @@ const AdminDashboardLayout = () => {
                     </a>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="#">
+                    <a
+                      className="dropdown-item"
+                      href="#"
+                      onClick={handleLogout}>
                       LogOut
                     </a>
                   </li>
@@ -64,7 +74,7 @@ const AdminDashboardLayout = () => {
                 margin: 0,
               }}>
               <ul className="nav nav-pills flex-column mb-auto">
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <NavLink
                     to="/dashboard"
                     className={(navData) =>
@@ -91,7 +101,7 @@ const AdminDashboardLayout = () => {
                     </span>
                     <span>DashBoard</span>
                   </NavLink>
-                </li>
+                </li> */}
                 <li className="nav-item">
                   <NavLink
                     to="/user"

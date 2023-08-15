@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAppDispatch } from '../store/hooks';
-import { setToken } from '../store/authSlice';
+import { logout, setToken } from '../store/authSlice';
 import { useAuthLoginMutation } from '../endpoints/authApiSlice';
 
 type FormData = {
@@ -15,19 +15,29 @@ const LoginPage: FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  const [authLogin, { data, isLoading }] = useAuthLoginMutation();
+  const [authLogin, { data, isLoading, isSuccess }] = useAuthLoginMutation();
 
   const dispatch = useAppDispatch();
   const onSubmit: SubmitHandler<FormData> = (data) => {
     authLogin(data);
   };
-  useEffect(() => {
+  if (isSuccess) {
     if (!isLoading && data) {
       const token = data.token;
-      const user = { id: data.id, name: 'John Doe' };
-      dispatch(setToken({ token, user }));
+      localStorage.setItem('token', token);
     }
-  }, [isLoading, data, dispatch]);
+  }
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      dispatch(
+        setToken({
+          token: storedToken,
+        })
+      );
+    }
+  }, [dispatch, data]);
 
   return (
     <div className="container">

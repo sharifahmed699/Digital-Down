@@ -11,7 +11,7 @@ export const CheckAuthentication: React.FC<CheckAuthenticationProps> = ({
   const { isLoggedIn } = useAppSelector((state) => state.auth);
 
   if (page === 'public' && isLoggedIn) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/user" replace />;
   }
 
   if (page === 'private' && !isLoggedIn) {

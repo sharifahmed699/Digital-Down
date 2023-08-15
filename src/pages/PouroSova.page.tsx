@@ -1,7 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
-import { CreateUpoZillaModal } from '../modals/upoZilla/CreateUpoZillaModal.modal';
-import { useGetUpoZilaQuery } from '../endpoints/upoZillaApiSlice';
 import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
 import { CreatePouroSovaModal } from '../modals/souroSova/CreatePouroSovaModal.modal';
 import {
@@ -15,11 +13,11 @@ const PouroSova = () => {
   const [showCreatePouroSovaModal, setShowCreatePouroSovaModal] =
     useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [editUpoZillaData, setEditUpoZillaData] = useState<
-    IGetAllDistrict | undefined
-  >(undefined);
+  const [editData, setEditData] = useState<IGetAllDistrict | undefined>(
+    undefined
+  );
   const handleEditClick = (rowData: IGetAllDistrict | undefined) => {
-    setEditUpoZillaData(rowData); // Step 2
+    setEditData(rowData); // Step 2
     setShowCreatePouroSovaModal(true);
   };
   const columns: TableColumn<IGetAllDistrict | undefined>[] = [
@@ -56,7 +54,7 @@ const PouroSova = () => {
             className="btn btn-link delete-icon pe-0"
             onClick={() => {
               setShowDeleteModal(true);
-              setEditUpoZillaData(row);
+              setEditData(row);
             }}>
             <svg
               stroke="currentColor"
@@ -88,7 +86,7 @@ const PouroSova = () => {
     if (isSuccess) {
       toast.success('Successfully Delete !!');
       setShowDeleteModal(false);
-      setEditUpoZillaData(undefined);
+      setEditData(undefined);
     }
   }, [isSuccess]);
   if (isLoading) {
@@ -121,6 +119,8 @@ const PouroSova = () => {
         <CreatePouroSovaModal
           showCreatePouroSovaModal={showCreatePouroSovaModal}
           setShowCreatePouroSovaModal={setShowCreatePouroSovaModal}
+          editData={editData}
+          setEditData={setEditData}
         />
       )}
       {showDeleteModal && (
@@ -128,9 +128,9 @@ const PouroSova = () => {
           showDeleteModal={showDeleteModal}
           setShowDeleteModal={setShowDeleteModal}
           handleDelete={handleDelete}
-          deletedId={editUpoZillaData?.id}
+          deletedId={editData?.id}
           isDeleteLoading={isDeleteLoading}
-          setClearData={setEditUpoZillaData}
+          setClearData={setEditData}
         />
       )}
     </Fragment>

@@ -1,8 +1,11 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { ICreateDivisionModalProps } from '../../interfaces/modals/createDivision.interface';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useCreateDivisionMutation } from '../../endpoints/divisionApiSlice';
+import {
+  useCreateDivisionMutation,
+  useEditDivisionMutation,
+} from '../../endpoints/divisionApiSlice';
 
 export interface ICreateDivisionPayload {
   name: string;
@@ -11,23 +14,49 @@ export interface ICreateDivisionPayload {
 export const CreateDivisionModal: FC<ICreateDivisionModalProps> = ({
   showCreateDivisionModal,
   setShowCreateDivisionModal,
+  editData,
+  setEditData,
 }) => {
   const {
     register,
     handleSubmit,
     clearErrors,
+    setValue,
     formState: { errors },
   } = useForm<ICreateDivisionPayload>();
 
-  const [createDivision, { isSuccess }] = useCreateDivisionMutation();
+  const [createDivision, { isSuccess, isLoading: isCreatetLoading }] =
+    useCreateDivisionMutation();
+  const [editDivision, { isSuccess: isEditSuccess, isLoading: isEditLoading }] =
+    useEditDivisionMutation();
   const handleCreateDivision: SubmitHandler<ICreateDivisionPayload> = (
     data
   ) => {
-    createDivision(data);
+    if (editData) {
+      editDivision({
+        id: editData?.id,
+        data: {
+          name: data.name,
+        },
+      });
+    } else {
+      createDivision(data);
+    }
   };
-  if (isSuccess) {
+  useEffect(() => {
+    if (editData) {
+      setValue('name', editData.name);
+    }
+  }, [editData, setValue]);
+  if (isSuccess || isEditSuccess) {
     setShowCreateDivisionModal(false);
+    setEditData(undefined);
   }
+
+  const handleCloseModal = () => {
+    setShowCreateDivisionModal(false);
+    setEditData(undefined);
+  };
   return (
     <Fragment>
       <Modal
@@ -68,13 +97,22 @@ export const CreateDivisionModal: FC<ICreateDivisionModalProps> = ({
               type="button"
               className="btn btn-secondary"
               onClick={() => {
-                setShowCreateDivisionModal?.(false);
+                handleCloseModal();
                 clearErrors();
               }}>
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
-              Create
+            <button
+              disabled={isCreatetLoading || isEditLoading}
+              type="submit"
+              className="btn btn-primary">
+              {(isCreatetLoading || isEditLoading) && (
+                <span
+                  className="spinner-border spinner-border-sm mx-3"
+                  role="status"
+                  aria-hidden="true"></span>
+              )}
+              {editData ? 'Update' : 'Create'}
             </button>
           </Modal.Footer>
         </form>

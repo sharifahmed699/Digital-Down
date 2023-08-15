@@ -1,12 +1,14 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import Select, { createFilter } from 'react-select';
+import Select from 'react-select';
 import { ICreatePouroSovaModalProps } from '../../interfaces/modals/createPouroSovainterface';
-import { ICreateUpoZillaPayload } from '../../interfaces/upozilla/ICreateUpoZillaPayload.interface';
 import { ICreatePouroSovaPayload } from '../../interfaces/pouroSova/ICreatePouroSovaPayload.interface';
 import { useGetUpoZilaQuery } from '../../endpoints/upoZillaApiSlice';
-import { useCreatePouroSovaMutation } from '../../endpoints/pouroSovaApiSlice';
+import {
+  useCreatePouroSovaMutation,
+  useEditPouroSovaMutation,
+} from '../../endpoints/pouroSovaApiSlice';
 
 export interface IOption {
   label: string;
@@ -16,6 +18,8 @@ export interface IOption {
 export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
   showCreatePouroSovaModal,
   setShowCreatePouroSovaModal,
+  editData,
+  setEditData,
 }) => {
   const {
     register,
@@ -23,48 +27,70 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
     clearErrors,
     formState: { errors },
     control,
+    setValue,
   } = useForm<ICreatePouroSovaPayload>();
 
   const { isLoading, data } = useGetUpoZilaQuery(undefined);
-  const [createPouroSova, { isSuccess }] = useCreatePouroSovaMutation();
-  const handleCreateDivision: SubmitHandler<ICreatePouroSovaPayload> = (
+  const [createPouroSova, { isSuccess, isLoading: isCreatetLoading }] =
+    useCreatePouroSovaMutation();
+  const [
+    editPouroSova,
+    { isSuccess: isEditSuccess, isLoading: isEditLoading },
+  ] = useEditPouroSovaMutation();
+  const handleCreatePouroSova: SubmitHandler<ICreatePouroSovaPayload> = (
     data
   ) => {
-    createPouroSova(data);
+    if (editData) {
+      editPouroSova({
+        id: editData?.id,
+        data: {
+          name: data.name,
+        },
+      });
+    } else {
+      createPouroSova(data);
+    }
   };
+  useEffect(() => {
+    if (editData) {
+      setValue('name', editData.name);
+      setValue('upozilaId', editData.id.toString());
+    }
+  }, [editData, setValue]);
   const upoZillaOptions = data?.data?.map((item: any) => ({
     label: item.name,
     value: item.id.toString(),
   }));
-  const reactSelectFilterConfig = {
-    ignoreCase: true,
-    ignoreAccents: true,
-    stringify: (option: IOption) => `${option.label}`,
-    matchFrom: 'any' as const,
-    trim: true,
-  };
 
-  if (isSuccess) {
+  if (isSuccess || isEditSuccess) {
     setShowCreatePouroSovaModal(false);
+    setEditData(undefined);
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const handleCloseModal = () => {
+    setShowCreatePouroSovaModal(false);
+    setEditData(undefined);
+  };
   return (
     <Fragment>
       <Modal
         backdrop="static"
         show={showCreatePouroSovaModal}
-        onHide={() => setShowCreatePouroSovaModal?.(false)}
+        onHide={() => {
+          setShowCreatePouroSovaModal?.(false);
+          handleCloseModal();
+        }}
         centered>
-        <form onSubmit={handleSubmit(handleCreateDivision)}>
+        <form onSubmit={handleSubmit(handleCreatePouroSova)}>
           <Modal.Header
             closeButton
             onHide={() => {
               clearErrors();
             }}>
-            <Modal.Title>Create Pouro Sova</Modal.Title>
+            <Modal.Title>
+              {' '}
+              {editData ? 'Update' : 'Create'} Pouro Sova
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">
@@ -84,36 +110,37 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
                   <small className="text-danger">{errors.name?.message}</small>
                 </div>
               </div>
-              <div className="mb-3">
-                <label className="form-label">
-                  Zilla Name <span className="text-danger">*</span>
-                </label>
-                <Controller
-                  name="upozilaId"
-                  control={control}
-                  render={({ field: { name, onChange, ref, value } }) => (
-                    <Select
-                      ref={ref}
-                      name={name}
-                      components={{
-                        IndicatorSeparator: () => null,
-                      }}
-                      filterOption={createFilter(reactSelectFilterConfig)}
-                      value={upoZillaOptions?.filter((option: IOption) => {
-                        return value?.includes(option.value as string);
-                      })}
-                      options={upoZillaOptions}
-                      onChange={(selectedOption: IOption | null) => {
-                        const newValue = selectedOption?.value || '';
-                        onChange(newValue);
-                      }}
-                    />
-                  )}
-                />
-                <small className="text-danger">
-                  {errors.upozilaId?.message}
-                </small>
-              </div>
+              {!editData && (
+                <div className="mb-3">
+                  <label className="form-label">
+                    Zilla Name <span className="text-danger">*</span>
+                  </label>
+                  <Controller
+                    name="upozilaId"
+                    control={control}
+                    render={({ field: { name, onChange, ref, value } }) => (
+                      <Select
+                        ref={ref}
+                        name={name}
+                        components={{
+                          IndicatorSeparator: () => null,
+                        }}
+                        value={upoZillaOptions?.filter((option: IOption) => {
+                          return value?.includes(option.value as string);
+                        })}
+                        options={upoZillaOptions}
+                        onChange={(selectedOption: IOption | null) => {
+                          const newValue = selectedOption?.value || '';
+                          onChange(newValue);
+                        }}
+                      />
+                    )}
+                  />
+                  <small className="text-danger">
+                    {errors.upozilaId?.message}
+                  </small>
+                </div>
+              )}
             </div>
           </Modal.Body>
           <Modal.Footer>
@@ -121,13 +148,22 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
               type="button"
               className="btn btn-secondary"
               onClick={() => {
-                setShowCreatePouroSovaModal?.(false);
+                handleCloseModal();
                 clearErrors();
               }}>
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
-              Create
+            <button
+              disabled={isCreatetLoading || isEditLoading}
+              type="submit"
+              className="btn btn-primary">
+              {(isCreatetLoading || isEditLoading) && (
+                <span
+                  className="spinner-border spinner-border-sm mx-3"
+                  role="status"
+                  aria-hidden="true"></span>
+              )}
+              {editData ? 'Update' : 'Create'}
             </button>
           </Modal.Footer>
         </form>

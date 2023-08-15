@@ -69,8 +69,9 @@ export const CreateDivisionModal: FC<ICreateDivisionModalProps> = ({
             closeButton
             onHide={() => {
               clearErrors();
+              handleCloseModal();
             }}>
-            <Modal.Title>Create Division</Modal.Title>
+            <Modal.Title>{editData ? 'Update' : 'Create'} Division</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">

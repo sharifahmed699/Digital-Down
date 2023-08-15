@@ -86,6 +86,7 @@ export const CreatePouroSovaModal: FC<ICreatePouroSovaModalProps> = ({
             closeButton
             onHide={() => {
               clearErrors();
+              handleCloseModal();
             }}>
             <Modal.Title>
               {' '}

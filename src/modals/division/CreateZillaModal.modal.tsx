@@ -1,10 +1,13 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import Select, { createFilter } from 'react-select';
 import { ICreateZillaModalProps } from '../../interfaces/modals/createZilla.interface';
 import { useGetDivisionQuery } from '../../endpoints/divisionApiSlice';
-import { useCreateDistrictMutation } from '../../endpoints/districtApiSlice';
+import {
+  useCreateDistrictMutation,
+  useEditDistrictMutation,
+} from '../../endpoints/districtApiSlice';
 import { ICreateZillaPayload } from '../../interfaces/district/ICreateDistrictPayload.interface';
 
 export interface IOption {
@@ -15,6 +18,8 @@ export interface IOption {
 export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
   showCreateZillaModal,
   setShowCreateZillaModal,
+  editData,
+  setEditData,
 }) => {
   const {
     register,
@@ -22,31 +27,48 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
     clearErrors,
     formState: { errors },
     control,
+    setValue,
   } = useForm<ICreateZillaPayload>();
 
-  const [createDistrict, { isSuccess }] = useCreateDistrictMutation();
   const { isLoading, data } = useGetDivisionQuery(undefined);
+  const [createDistrict, { isSuccess, isLoading: isCreatetLoading }] =
+    useCreateDistrictMutation();
+  const [editDistrict, { isSuccess: isEditSuccess, isLoading: isEditLoading }] =
+    useEditDistrictMutation();
   const handleCreateDivision: SubmitHandler<ICreateZillaPayload> = (data) => {
-    createDistrict(data);
+    if (editData) {
+      editDistrict({
+        id: editData?.id,
+        data: {
+          name: data.name,
+        },
+      });
+    } else {
+      createDistrict(data);
+    }
   };
 
+  useEffect(() => {
+    if (editData) {
+      setValue('name', editData.name);
+      setValue('divisionId', editData.id.toString());
+    }
+  }, [editData, setValue]);
   const divisionOptions = data?.data?.map((item: any) => ({
     label: item.name,
     value: item.id.toString(),
   }));
-  const reactSelectFilterConfig = {
-    ignoreCase: true,
-    ignoreAccents: true,
-    stringify: (option: IOption) => `${option.label}`,
-    matchFrom: 'any' as const,
-    trim: true,
-  };
-  if (isSuccess) {
+
+  if (isSuccess || isEditSuccess) {
     setShowCreateZillaModal(false);
+    setEditData(undefined);
   }
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+
+  const handleCloseModal = () => {
+    setShowCreateZillaModal(false);
+    setEditData(undefined);
+  };
+
   return (
     <Fragment>
       <Modal
@@ -59,8 +81,9 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
             closeButton
             onHide={() => {
               clearErrors();
+              handleCloseModal();
             }}>
-            <Modal.Title>Create District</Modal.Title>
+            <Modal.Title>{editData ? 'Update' : 'Create'} District</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">
@@ -94,7 +117,6 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
                       components={{
                         IndicatorSeparator: () => null,
                       }}
-                      filterOption={createFilter(reactSelectFilterConfig)}
                       value={divisionOptions?.filter((option: IOption) => {
                         return value?.includes(option.value as string);
                       })}
@@ -117,13 +139,22 @@ export const CreateZillaModal: FC<ICreateZillaModalProps> = ({
               type="button"
               className="btn btn-secondary"
               onClick={() => {
-                setShowCreateZillaModal?.(false);
+                handleCloseModal();
                 clearErrors();
               }}>
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
-              Create
+            <button
+              disabled={isCreatetLoading || isEditLoading}
+              type="submit"
+              className="btn btn-primary">
+              {(isCreatetLoading || isEditLoading) && (
+                <span
+                  className="spinner-border spinner-border-sm mx-3"
+                  role="status"
+                  aria-hidden="true"></span>
+              )}
+              {editData ? 'Update' : 'Create'}
             </button>
           </Modal.Footer>
         </form>

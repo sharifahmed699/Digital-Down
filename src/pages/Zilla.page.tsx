@@ -1,13 +1,26 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { CreateZillaModal } from '../modals/division/CreateZillaModal.modal';
-import { useGetDistrictQuery } from '../endpoints/districtApiSlice';
+import {
+  useDeleteDistrictMutation,
+  useGetDistrictQuery,
+} from '../endpoints/districtApiSlice';
 import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interface';
+import toast from 'react-hot-toast';
+import { DeleteModal } from '../modals/DeleteModal.modal';
 
 const Zilla = () => {
   const [showCreateZillaModal, setShowCreateZillaModal] =
     useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [editData, setEditData] = useState<IGetAllDistrict | undefined>(
+    undefined
+  );
 
+  const handleEditClick = (rowData: IGetAllDistrict | undefined) => {
+    setEditData(rowData);
+    setShowCreateZillaModal(true);
+  };
   const columns: TableColumn<IGetAllDistrict | undefined>[] = [
     {
       name: 'ID',
@@ -22,11 +35,11 @@ const Zilla = () => {
 
     {
       name: 'Action',
-      cell: () => (
+      cell: (row) => (
         <>
           <button
             className="btn btn-link edit-icon pe-0"
-            onClick={() => setShowCreateZillaModal(true)}>
+            onClick={() => handleEditClick(row)}>
             <svg
               stroke="currentColor"
               fill="currentColor"
@@ -39,7 +52,12 @@ const Zilla = () => {
               <path d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2z"></path>
             </svg>
           </button>
-          <button className="btn btn-link delete-icon pe-0">
+          <button
+            className="btn btn-link delete-icon pe-0"
+            onClick={() => {
+              setShowDeleteModal(true);
+              setEditData(row);
+            }}>
             <svg
               stroke="currentColor"
               fill="currentColor"
@@ -61,6 +79,19 @@ const Zilla = () => {
   ];
 
   const { isLoading, data } = useGetDistrictQuery(undefined);
+  const [deleteUpoZila, { isLoading: isDeleteLoading, isSuccess }] =
+    useDeleteDistrictMutation();
+
+  const handleDelete = (id: number) => {
+    deleteUpoZila(id);
+  };
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Successfully Delete !!');
+      setShowDeleteModal(false);
+      setEditData(undefined);
+    }
+  }, [isSuccess]);
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center loader-height bg-dark bg-opacity-10">
@@ -91,6 +122,18 @@ const Zilla = () => {
         <CreateZillaModal
           showCreateZillaModal={showCreateZillaModal}
           setShowCreateZillaModal={setShowCreateZillaModal}
+          editData={editData}
+          setEditData={setEditData}
+        />
+      )}
+      {showDeleteModal && (
+        <DeleteModal
+          showDeleteModal={showDeleteModal}
+          setShowDeleteModal={setShowDeleteModal}
+          handleDelete={handleDelete}
+          deletedId={editData?.id}
+          isDeleteLoading={isDeleteLoading}
+          setClearData={setEditData}
         />
       )}
     </Fragment>

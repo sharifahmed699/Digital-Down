@@ -1,10 +1,13 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import Select, { createFilter } from 'react-select';
 import { ICreateUpoZillaModalProps } from '../../interfaces/modals/createUpoZilla.interface';
 import { useGetDistrictQuery } from '../../endpoints/districtApiSlice';
-import { useCreateUpoZilaMutation } from '../../endpoints/upoZillaApiSlice';
+import {
+  useCreateUpoZilaMutation,
+  useEditUpoZilaMutation,
+} from '../../endpoints/upoZillaApiSlice';
 import { ICreateUpoZillaPayload } from '../../interfaces/upozilla/ICreateUpoZillaPayload.interface';
 
 export interface IOption {
@@ -15,6 +18,8 @@ export interface IOption {
 export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
   showCreateUpoZillaModal,
   setShowCreateUpoZillaModal,
+  editUpoZillaData,
+  setEditUpoZillaData,
 }) => {
   const {
     register,
@@ -22,31 +27,50 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
     clearErrors,
     formState: { errors },
     control,
+    setValue,
+    reset,
   } = useForm<ICreateUpoZillaPayload>();
 
   const { isLoading, data } = useGetDistrictQuery(undefined);
-  const [createUpoZila, { isSuccess }] = useCreateUpoZilaMutation();
+  const [createUpoZila, { isSuccess, isLoading: isCreatetLoading }] =
+    useCreateUpoZilaMutation();
+  const [editUpoZila, { isSuccess: isEditSuccess, isLoading: isEditLoading }] =
+    useEditUpoZilaMutation();
   const handleCreateDivision: SubmitHandler<ICreateUpoZillaPayload> = (
     data
   ) => {
-    createUpoZila(data);
+    if (editUpoZillaData) {
+      editUpoZila({
+        id: editUpoZillaData?.id,
+        data: {
+          name: data.name,
+        },
+      });
+    } else {
+      createUpoZila(data);
+    }
   };
 
+  useEffect(() => {
+    if (editUpoZillaData) {
+      setValue('name', editUpoZillaData.name);
+      setValue('districtId', editUpoZillaData.id.toString());
+    }
+  }, [editUpoZillaData, setValue]);
   const zillaOptions = data?.data?.map((item: any) => ({
     label: item.name,
     value: item.id.toString(),
   }));
-  const reactSelectFilterConfig = {
-    ignoreCase: true,
-    ignoreAccents: true,
-    stringify: (option: IOption) => `${option.label}`,
-    matchFrom: 'any' as const,
-    trim: true,
-  };
 
-  if (isSuccess) {
+  if (isSuccess || isEditSuccess) {
     setShowCreateUpoZillaModal(false);
+    setEditUpoZillaData(undefined);
   }
+
+  const handleCloseModal = () => {
+    setShowCreateUpoZillaModal(false);
+    setEditUpoZillaData(undefined);
+  };
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -62,6 +86,7 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
             closeButton
             onHide={() => {
               clearErrors();
+              handleCloseModal();
             }}>
             <Modal.Title>Create UpoZilla</Modal.Title>
           </Modal.Header>
@@ -83,36 +108,37 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
                   <small className="text-danger">{errors.name?.message}</small>
                 </div>
               </div>
-              <div className="mb-3">
-                <label className="form-label">
-                  Zilla Name <span className="text-danger">*</span>
-                </label>
-                <Controller
-                  name="districtId"
-                  control={control}
-                  render={({ field: { name, onChange, ref, value } }) => (
-                    <Select
-                      ref={ref}
-                      name={name}
-                      components={{
-                        IndicatorSeparator: () => null,
-                      }}
-                      filterOption={createFilter(reactSelectFilterConfig)}
-                      value={zillaOptions?.filter((option: IOption) => {
-                        return value?.includes(option.value as string);
-                      })}
-                      options={zillaOptions}
-                      onChange={(selectedOption: IOption | null) => {
-                        const newValue = selectedOption?.value || '';
-                        onChange(newValue);
-                      }}
-                    />
-                  )}
-                />
-                <small className="text-danger">
-                  {errors.districtId?.message}
-                </small>
-              </div>
+              {!editUpoZillaData && (
+                <div className="mb-3">
+                  <label className="form-label">
+                    Zilla Name <span className="text-danger">*</span>
+                  </label>
+                  <Controller
+                    name="districtId"
+                    control={control}
+                    render={({ field: { name, onChange, ref, value } }) => (
+                      <Select
+                        ref={ref}
+                        name={name}
+                        components={{
+                          IndicatorSeparator: () => null,
+                        }}
+                        value={zillaOptions?.filter((option: IOption) => {
+                          return value?.includes(option.value as string);
+                        })}
+                        options={zillaOptions}
+                        onChange={(selectedOption: IOption | null) => {
+                          const newValue = selectedOption?.value || '';
+                          onChange(newValue);
+                        }}
+                      />
+                    )}
+                  />
+                  <small className="text-danger">
+                    {errors.districtId?.message}
+                  </small>
+                </div>
+              )}
             </div>
           </Modal.Body>
           <Modal.Footer>
@@ -120,13 +146,23 @@ export const CreateUpoZillaModal: FC<ICreateUpoZillaModalProps> = ({
               type="button"
               className="btn btn-secondary"
               onClick={() => {
-                setShowCreateUpoZillaModal?.(false);
+                handleCloseModal();
                 clearErrors();
+                reset();
               }}>
               Close
             </button>
-            <button type="submit" className="btn btn-primary">
-              Create
+            <button
+              disabled={isCreatetLoading || isEditLoading}
+              type="submit"
+              className="btn btn-primary">
+              {(isCreatetLoading || isEditLoading) && (
+                <span
+                  className="spinner-border spinner-border-sm mx-3"
+                  role="status"
+                  aria-hidden="true"></span>
+              )}
+              {editUpoZillaData ? 'Update' : 'Create'}
             </button>
           </Modal.Footer>
         </form>

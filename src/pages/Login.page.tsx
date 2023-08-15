@@ -3,8 +3,9 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAppDispatch } from '../store/hooks';
 import { logout, setToken } from '../store/authSlice';
 import { useAuthLoginMutation } from '../endpoints/authApiSlice';
+import toast from 'react-hot-toast';
 
-type FormData = {
+export type FormData = {
   mobileNumber: string;
   password: string;
 };
@@ -21,12 +22,13 @@ const LoginPage: FC = () => {
   const onSubmit: SubmitHandler<FormData> = (data) => {
     authLogin(data);
   };
-  if (isSuccess) {
-    if (!isLoading && data) {
-      const token = data.token;
-      localStorage.setItem('token', token);
-    }
-  }
+  // if (isSuccess) {
+  //   if (!isLoading && data) {
+  //     const token = data.token;
+  //     localStorage.setItem('token', token);
+  //     toast.success(data.content);
+  //   }
+  // }
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -38,7 +40,11 @@ const LoginPage: FC = () => {
       );
     }
   }, [dispatch, data]);
-
+  if (isSuccess && !isLoading && data) {
+    const token = data.token;
+    localStorage.setItem('token', token);
+    toast.success(data.content);
+  }
   return (
     <div className="container">
       <div className="row">

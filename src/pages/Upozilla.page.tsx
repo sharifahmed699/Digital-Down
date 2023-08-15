@@ -7,7 +7,14 @@ import { IGetAllDistrict } from '../interfaces/district/IGetAllDistrict.interfac
 const UpoZilla = () => {
   const [showCreateUpoZillaModal, setShowCreateUpoZillaModal] =
     useState<boolean>(false);
+  const [editUpoZillaData, setEditUpoZillaData] = useState<
+    IGetAllDistrict | undefined
+  >(undefined); // Step 1
 
+  const handleEditClick = (rowData: IGetAllDistrict | undefined) => {
+    setEditUpoZillaData(rowData); // Step 2
+    setShowCreateUpoZillaModal(true);
+  };
   const columns: TableColumn<IGetAllDistrict | undefined>[] = [
     {
       name: 'ID',
@@ -21,11 +28,11 @@ const UpoZilla = () => {
     },
     {
       name: 'Action',
-      cell: () => (
+      cell: (row) => (
         <>
           <button
             className="btn btn-link edit-icon pe-0"
-            onClick={() => setShowCreateUpoZillaModal(true)}>
+            onClick={() => handleEditClick(row)}>
             <svg
               stroke="currentColor"
               fill="currentColor"
@@ -89,6 +96,8 @@ const UpoZilla = () => {
         <CreateUpoZillaModal
           showCreateUpoZillaModal={showCreateUpoZillaModal}
           setShowCreateUpoZillaModal={setShowCreateUpoZillaModal}
+          editUpoZillaData={editUpoZillaData}
+          setEditUpoZillaData={setEditUpoZillaData}
         />
       )}
     </Fragment>

@@ -19,7 +19,19 @@ const upoZillaApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['admin/createUpoZilla'],
     }),
+    editUpoZila: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/admin/edit/upozila/${id}`,
+        method: 'PUT', // Use PUT method for editing
+        body: data,
+      }),
+      invalidatesTags: ['admin/createUpoZilla'],
+    }),
   }),
 });
 
-export const { useCreateUpoZilaMutation, useGetUpoZilaQuery } = upoZillaApi;
+export const {
+  useCreateUpoZilaMutation,
+  useGetUpoZilaQuery,
+  useEditUpoZilaMutation,
+} = upoZillaApi;

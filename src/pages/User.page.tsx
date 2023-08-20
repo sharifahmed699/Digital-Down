@@ -1,19 +1,24 @@
-import { FC, Fragment, useState } from 'react';
+import { FC, Fragment, useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { UserStatusUpdateModal } from '../modals/UserStatusUpdateModal.modal';
 import { useGetUserQuery } from '../endpoints/authApiSlice';
 import { IGetAllUser } from '../interfaces/users/IGetAllUser.interface';
+import io from 'socket.io-client';
 
 const User: FC = () => {
   const [showUserStatusUpdateModal, setShowUserStatusUpdateModal] =
     useState<boolean>(false);
+  const [editData, setEditData] = useState<IGetAllUser | undefined>(undefined);
+
+  const [messages, setMessages] = useState<string[]>([]);
+  // const socket = io('http://13.126.124.149:8080/websocket');
+  // useEffect(() => {
+  //   socket.on('message', (message: string) => {
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+  //   });
+  // }, [socket]);
 
   const columns: TableColumn<IGetAllUser | undefined>[] = [
-    {
-      name: 'ID',
-      selector: (row) => row?.id ?? '',
-      sortable: true,
-    },
     {
       name: 'Name',
       selector: (row) => row?.name ?? '',
@@ -25,17 +30,17 @@ const User: FC = () => {
       sortable: true,
     },
     {
-      name: 'Phone',
-      selector: (row) => row?.genderType ?? '',
+      name: 'Gender',
+      selector: (row) => row?.genderType.substring(1) ?? '',
       sortable: true,
     },
     {
       name: 'Address',
-      selector: (row) => row?.birthday ?? '',
+      selector: (row) => row?.district ?? '',
       sortable: true,
     },
     {
-      name: 'Age',
+      name: 'Phone Number',
       selector: (row) => row?.mobileNumber ?? '',
       sortable: true,
     },
@@ -44,10 +49,13 @@ const User: FC = () => {
       cell: (row) => {
         return (
           <div className="d-flex align-items-center">
-            {row?.isRegistered}
+            {row?.isRegistered.substring(1)}
             <button
               className="btn btn-link edit-icon pe-0"
-              onClick={() => setShowUserStatusUpdateModal(true)}>
+              onClick={() => {
+                setShowUserStatusUpdateModal(true);
+                setEditData(row);
+              }}>
               <svg
                 stroke="currentColor"
                 fill="currentColor"
@@ -65,29 +73,10 @@ const User: FC = () => {
       },
       sortable: true,
     },
-    {
-      name: 'Action',
-      cell: () => (
-        <button className="btn btn-link delete-icon pe-0">
-          <svg
-            stroke="currentColor"
-            fill="currentColor"
-            strokeWidth="0"
-            viewBox="0 0 24 24"
-            height="1em"
-            width="1em"
-            xmlns="http://www.w3.org/2000/svg">
-            <path fill="none" d="M0 0h24v24H0z"></path>
-            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-          </svg>
-        </button>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
-    },
   ];
   const { isLoading, data } = useGetUserQuery();
+
+  const users: (IGetAllUser | undefined)[] = data?.data ?? [];
 
   if (isLoading) {
     return (
@@ -96,10 +85,16 @@ const User: FC = () => {
       </div>
     );
   }
-
-  const users: (IGetAllUser | undefined)[] = data?.data ?? [];
   return (
     <Fragment>
+      <h2>Socket.IO Chat</h2>
+      <div>
+        <ul>
+          {messages.map((message, index) => (
+            <li key={index}>{message}</li>
+          ))}
+        </ul>
+      </div>
       <div>
         <DataTable<IGetAllUser | undefined> columns={columns} data={users} />
       </div>
@@ -108,6 +103,8 @@ const User: FC = () => {
         <UserStatusUpdateModal
           showUserStatusUpdateModal={showUserStatusUpdateModal}
           setShowUserStatusUpdateModal={setShowUserStatusUpdateModal}
+          editData={editData}
+          setEditData={setEditData}
         />
       )}
     </Fragment>
